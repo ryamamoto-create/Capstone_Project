@@ -1,2 +1,5 @@
 # Ignore data.txt
-data/data.txt
+data/raw/data.txt
+
+# Ignore virtual environment
+capstone/
