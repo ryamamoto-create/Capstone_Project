@@ -1,6 +1,13 @@
+import sys
+import os
+
+# Add parent directory (Capstone root) to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import numpy as np
 import pandas as pd
-# import time
+from config import RATING_PATH, MOVIE_PATH
+import time
 
 # returns dataframe
 def load_ratings():
@@ -8,7 +15,7 @@ def load_ratings():
     movie_ids = []
     ratings = []
     dates = []
-    with open("data/raw/data.txt", encoding="utf-8") as f:
+    with open(RATING_PATH, encoding="utf-8") as f:
         for line in f:
             if line.endswith(":\n"):
                 # Extract movie_id from the line, removing the trailing ":\n"
@@ -33,7 +40,7 @@ def load_ratings():
 # returns dataframe
 def load_movies():
     movies = []
-    with open("data/raw/movieTitles.csv", encoding="utf-8") as f:
+    with open(MOVIE_PATH, encoding="utf-8") as f:
         for line in f:
             parts = line.strip().split(",")
 
@@ -60,8 +67,8 @@ def save_processed(df, filename):
 
 # save_processed(load_ratings(), "ratings")
 
-# Testing the load_ratings function and analyzing the resulting dataframe
 '''
+# Testing the load_ratings function and analyzing the resulting dataframe
 time_start = time.time()
 df = load_ratings()
 time_end = time.time()
