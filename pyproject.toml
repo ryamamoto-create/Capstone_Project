@@ -1,0 +1,15 @@
+# pyproject.toml
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "capstone"
+version = "0.1.0"
+dependencies = [
+    "numpy",
+    "pandas",
+    "pyarrow",
+    "fastparquet",
+    "scikit-learn"
+]

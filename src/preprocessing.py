@@ -1,14 +1,11 @@
-import sys
-import os
-
-# Add parent directory (Capstone root) to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-import numpy as np
 import pandas as pd
 from config import SEED
 
-def train_test_split(df, random_state=SEED):
+'''
+Creates a train-test split of the ratings dataframe, ensuring that each movie in the test set has exactly one rating in the training set. 
+This is done by grouping the dataframe by 'movie_id' and sampling one rating per movie for the test set, while the remaining ratings form the training set.
+'''
+def train_test(df, random_state=SEED):
     # Group by movie_id and sample one rating per movie for the test set
     test_df = df.groupby("movie_id").sample(n=1, random_state=random_state)
     
@@ -16,5 +13,3 @@ def train_test_split(df, random_state=SEED):
     train_df = df.drop(test_df.index)
     
     return train_df, test_df
-
-

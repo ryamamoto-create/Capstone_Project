@@ -10,3 +10,8 @@ capstone/
 
 # Ignore DS STORE
 *.DS_STORE
+
+# Python package artifacts
+*.egg-info/
+__pycache__/
+*.pyc

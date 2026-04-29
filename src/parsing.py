@@ -1,21 +1,22 @@
-import sys
-import os
-
-# Add parent directory (Capstone root) to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 import numpy as np
 import pandas as pd
 from config import RATING_PATH, MOVIE_PATH
-import time
+# import time
 
-# returns dataframe
+'''
+Due to the structure of the ratings file, we need to read it line by line and keep track of the current movie_id until we encounter the next one. 
+We will store the user_id, movie_id, rating, and date in separate lists and then create a DataFrame from those lists. 
+This approach allows us to efficiently parse the file without loading it entirely into memory at once, which is crucial given its size.
+'''
 def load_ratings():
+    # Columns: user_id, movie_id, rating, date
     user_ids = []
     movie_ids = []
     ratings = []
     dates = []
+    # Reading the file
     with open(RATING_PATH, encoding="utf-8") as f:
+        # The file is structured such that movie_id lines end with ":\n", and the subsequent lines contain user ratings for that movie until the next movie_id line.
         for line in f:
             if line.endswith(":\n"):
                 # Extract movie_id from the line, removing the trailing ":\n"
@@ -27,23 +28,32 @@ def load_ratings():
                 movie_ids.append(movie_id)
                 ratings.append(float(rating))
                 dates.append(date)
+    # Convert extracted data into a DataFrame
     df = pd.DataFrame({
         "user_id": user_ids,
         "movie_id": movie_ids,
         "rating": ratings,
         "date": dates
-    }).astype({"user_id": "int32", "movie_id": "int16", "rating": "int8", "date": str})
+    }).astype({"user_id": "int32", "movie_id": "int16", "rating": "int8", "date": str}) # Using smaller data types to save memory (1.86GB -> 405MB)
 
     df["date"] = pd.to_datetime(df["date"], format="%Y-%m-%d")
     return df
 
-# returns dataframe
+'''
+The movies file is a CSV with the format: movie_id, year, title. However, some titles may contain commas, which can complicate parsing.
+To handle this, we will read the file line by line, split on the first two commas to extract the movie_id and year, and then join the 
+remaining parts to reconstruct the title.
+'''
 def load_movies():
+    # Columns: movie_id, year, title
     movies = []
+    # Reading the file
     with open(MOVIE_PATH, encoding="utf-8") as f:
         for line in f:
+            # Split the line on commas, but only the first two commas to separate movie_id and year from the title
             parts = line.strip().split(",")
 
+            # Extract movie_id
             movie_id = int(parts[0])
         
             # Handle missing year safely
@@ -58,15 +68,19 @@ def load_movies():
             # Remove trailing commas if present
             title = title.rstrip(",")
 
+            # Append the parsed data to the movies list
             movies.append((movie_id, year, title))
+    
+    # Convert the list of movies into a DataFrame
+    # Use appropriate data types for memory efficiency (movie_id as int, year as Int64 to allow for NaN, title as string)
     return pd.DataFrame(movies, columns=["movie_id", "year", "title"]).astype({"movie_id": int, "year": "Int64", "title": str})
 
 # saves parquet to data/processed/{filename}.parquet
 def save_processed(df, filename):
+    # Save the processed DataFrame as a parquet file for efficient storage and faster loading in future analyses.
     df.to_parquet(f"data/processed/{filename}.parquet", index=False)
 
-# save_processed(load_ratings(), "ratings")
-
+# Used for testing the load_movies function and analyzing the resulting dataframept
 '''
 # Testing the load_ratings function and analyzing the resulting dataframe
 time_start = time.time()

@@ -1,12 +1,14 @@
 ## Capstone Project Structure
 ### Project contents
 * README.md
-* requirements.txt
-  * Required packages for this project
+* pyproject.toml
+  * Setup for this project
+  * Run [pip install -e .] to install packages
+* .vscode/
+  * settings.json
+    * Settings for VSCode
 * .gitignore
   * Ignore data and configurations
-* config.py
-  * N-number and path to movie rating data (too large to upload)
 * data/
   * raw/
     * data.txt
@@ -20,19 +22,21 @@
   * exploration.ipynb
     * Used for exploring data before implementing
 * src/
+  * \_\_init__.py
+    * Treat this directory as a package
+  * config.py
+    * N-number and paths to data
   * parsing.py
     * Getting the data into the dataframes and parquet
   * preprocessing.py
     * Getting the data into a more workable state
-  * split.py
-    * Train-test split
   * baseline.py
-    * Train baseline model
+    * Train baseline models
   * model.py
     * Train improved model(s)
   * evaluation.py
     * Evaluate the models
-  * utils.py
-    * Utility functions
+* img/
+  * Images
 * main.py
   * Main python file
