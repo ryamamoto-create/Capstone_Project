@@ -1,9 +1,8 @@
 import numpy as np
 import pandas as pd
 from preprocessing import train_test
+from evaluation import rmse_function
 from config import RATING_PARQUET_PATH
-
-train_df, test_df = train_test(pd.read_parquet(RATING_PARQUET_PATH))
 
 # Baseline model 1: Predict the global mean rating for all movies
 def global_mean_model(train_df, test_df):
@@ -14,7 +13,7 @@ def global_mean_model(train_df, test_df):
     preds = np.full(len(test_df), global_mean)
 
     # Calculate RMSE between the predictions and the actual ratings in the test set
-    rmse = np.sqrt(np.mean((test_df["rating"] - preds) ** 2))
+    rmse = rmse_function(test_df["rating"], preds)
 
     # Return the RMSE value
     return rmse
@@ -25,10 +24,10 @@ def movie_mean_model(train_df, test_df):
     movie_means = train_df.groupby("movie_id")["rating"].mean()
 
     # Predict the mean rating for each movie in the test set
-    preds = test_df["movie_id"].map(movie_means)
+    preds = test_df["movie_id"].map(movie_means).fillna(train_df["rating"].mean())
 
     # Calculate RMSE between the predictions and the actual ratings in the test set
-    rmse = np.sqrt(np.mean((test_df["rating"] - preds) ** 2))
+    rmse = rmse_function(test_df["rating"], preds)
 
     # Return the RMSE value
     return rmse
@@ -46,16 +45,28 @@ def user_movie_bias_model(train_df, test_df):
     # Calculate the movie bias (average rating for each movie minus the global mean)
     movie_bias = train_df.groupby("movie_id")["rating"].mean() - global_mean
 
-    # Calculate the user bias (average rating for each user minus the global mean)
-    user_bias = train_df.groupby("user_id")["rating"].mean() - global_mean
+    # Calculate the user bias (average rating for each user minus the global mean and movie bias)
+    user_bias = (
+    train_df.assign(
+        adjusted = train_df["rating"]
+        - train_df["movie_id"].map(movie_bias)
+        - global_mean
+    )
+    .groupby("user_id")["adjusted"]
+    .mean()
+    )
 
     # Predict the rating for each test sample as the global mean plus the movie bias and user bias
-    preds = test_df.apply(lambda row: global_mean + movie_bias.get(row["movie_id"], 0) + user_bias.get(row["user_id"], 0), axis=1)
+    # Updated to be vectorized for better performance
+    preds = (
+    global_mean
+    + test_df["movie_id"].map(movie_bias)
+    + test_df["user_id"].map(user_bias)
+    )
+
+    preds = preds.fillna(global_mean)
 
     # Calculate RMSE between the predictions and the actual ratings in the test set
-    rmse = np.sqrt(np.mean((test_df["rating"] - preds) ** 2))
-    
-    return rmse
+    rmse = rmse_function(test_df["rating"], preds)
 
-user_movie_rmse = user_movie_bias_model(train_df, test_df)
-print(f"User-Movie Bias Model RMSE: {user_movie_rmse:.4f}")
+    return rmse
