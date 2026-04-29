@@ -1,5 +1,9 @@
-# Ignore data.txt
-data/raw/data.txt
+# Ignore raw data
+data/raw/
+data/processed/
+
+# Ignore configurations
+config.py
 
 # Ignore virtual environment
 capstone/
