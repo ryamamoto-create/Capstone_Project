@@ -13,6 +13,9 @@
       * Contains movie rating information
     * movieTitles.csv
       * Contains movie titles and IDs
+  * processed/
+    * ratings.parquet
+      * A parquet containing the parsed data.txt file
 * notebooks/
   * exploration.ipynb
     * Used for exploring data before implementing
