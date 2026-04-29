@@ -7,3 +7,6 @@ config.py
 
 # Ignore virtual environment
 capstone/
+
+# Ignore DS STORE
+*.DS_STORE
