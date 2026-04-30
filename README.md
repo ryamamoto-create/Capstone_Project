@@ -32,11 +32,13 @@
     * Getting the data into a more workable state
   * baseline.py
     * Train baseline models
-  * model.py
-    * Train improved model(s)
+  * svd.py
+    * Train svd model
   * evaluation.py
     * Evaluate the models
 * img/
   * Images
+* models/
+  * Files containing the trained models (since they take a long time to train)
 * main.py
   * Main python file
