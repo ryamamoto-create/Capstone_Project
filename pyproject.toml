@@ -1,16 +1,17 @@
-# pyproject.toml
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "capstone"
 version = "0.1.0"
+requires-python = ">=3.10,<3.12"
+
 dependencies = [
-    "numpy",
-    "pandas",
+    "numpy<2",                # critical: avoid NumPy 2.x
+    "pandas>=1.5",
     "pyarrow",
     "fastparquet",
-    "scikit-learn",
-    "surprise"
+    "scikit-learn>=1.2",
+    "scikit-surprise==1.1.4"  # explicitly use correct package name + version
 ]
