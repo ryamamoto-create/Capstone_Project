@@ -16,7 +16,7 @@ def global_mean_model(train_df, test_df):
     rmse = rmse_function(test_df["rating"], preds)
 
     # Return the RMSE value
-    return rmse
+    return preds, rmse
 
 # Baseline model 2: Predict the mean rating for each movie based on the training data
 def movie_mean_model(train_df, test_df):
@@ -30,7 +30,7 @@ def movie_mean_model(train_df, test_df):
     rmse = rmse_function(test_df["rating"], preds)
 
     # Return the RMSE value
-    return rmse
+    return preds, rmse
 
 '''
 Baseline model 3: We know some movies are better than others and these will have higher average ratings.
@@ -68,15 +68,12 @@ def user_movie_bias_model(train_df, test_df):
 
     # Predict the rating for each test sample as the global mean plus the movie bias and user bias
     # Updated to be vectorized for better performance
-    preds = (
-    global_mean
-    + test_df["movie_id"].map(movie_bias)
-    + test_df["user_id"].map(user_bias)
-    )
+    movie_b = test_df["movie_id"].map(movie_bias).fillna(0)
+    user_b = test_df["user_id"].map(user_bias).fillna(0)
 
-    preds = preds.fillna(global_mean)
+    preds = global_mean + movie_b + user_b
 
     # Calculate RMSE between the predictions and the actual ratings in the test set
     rmse = rmse_function(test_df["rating"], preds)
 
-    return rmse
+    return preds, rmse
