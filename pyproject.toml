@@ -11,5 +11,6 @@ dependencies = [
     "pandas",
     "pyarrow",
     "fastparquet",
-    "scikit-learn"
+    "scikit-learn",
+    "surprise"
 ]
