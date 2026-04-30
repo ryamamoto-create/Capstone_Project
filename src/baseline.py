@@ -1,8 +1,5 @@
 import numpy as np
-import pandas as pd
-from preprocessing import train_test
 from evaluation import rmse_function
-from config import RATING_PARQUET_PATH
 
 # Baseline model 1: Predict the global mean rating for all movies
 def global_mean_model(train_df, test_df):

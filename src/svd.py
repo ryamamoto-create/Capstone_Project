@@ -28,21 +28,27 @@ def train_svd(train_df):
 
     return model
 
-def predict_svd(model, test_df):
-    # 4. Efficient Prediction
-    # Convert test_df to the list of tuples format Surprise expects: [(uid, iid, r_ui), ...]
-    # This is much faster than manual zipping for large dataframes
-    testset_tuples = list(test_df[["user_id", "movie_id", "rating"]].itertuples(index=False, name=None))
+def predict_svd(model, train_df, test_df):
+    testset_tuples = list(
+        test_df[["user_id", "movie_id", "rating"]]
+        .itertuples(index=False, name=None)
+    )
+
     predictions = model.test(testset_tuples)
 
-    # 5. Extract estimated ratings
-    # .est is the predicted rating
-    preds = np.array([pred.est for pred in predictions])
+    pred_df = pd.DataFrame(
+    [(int(pred.uid), int(pred.iid), pred.est) for pred in predictions],
+    columns=["user_id", "movie_id", "pred"]
+    )
+
+    merged = test_df.merge(pred_df, on=["user_id", "movie_id"], how="left")
+
+    preds = merged["pred"].fillna(train_df["rating"].mean()).values
     return preds
 
 def svd_model(train_df, test_df):
     model = train_svd(train_df)
-    preds = predict_svd(model, test_df)
+    preds = predict_svd(model, train_df, test_df)
     rmse = rmse_function(test_df["rating"], preds)
     return preds, rmse, model
 
