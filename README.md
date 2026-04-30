@@ -34,11 +34,15 @@
     * Train baseline models
   * svd.py
     * Train svd model
+  * knn.py
+    * Train K nearest neighbors model
   * evaluation.py
     * Evaluate the models
 * img/
   * Images
 * models/
   * Files containing the trained models (since they take a long time to train)
+* predictions/
+  * Contains the predictions made by each model
 * main.py
   * Main python file
