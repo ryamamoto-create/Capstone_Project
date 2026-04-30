@@ -1,7 +1,11 @@
+import random 
 from preprocessing import train_test 
-from config import RATING_PARQUET_PATH
+from config import RATING_PARQUET_PATH, SEED
 from baseline import *  
 import pandas as pd
+
+# Set a random seed for reproducibility
+random.seed(SEED)
 
 # Read the parquet file and split it into training and testing sets
 df = pd.read_parquet(RATING_PARQUET_PATH)
