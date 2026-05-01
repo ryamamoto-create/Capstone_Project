@@ -8,11 +8,8 @@
 7. 
 8. 
 9. [Limitations](#limitations)
-10. 
-11. 
-12. 
-13. 
-14. [Project Structure](#capstone-project-structure)
+10. [Conclusion](#conclusion)
+11. [Project Structure](#capstone-project-structure)
 
 ## Introduction  
 In 2006, Netflix released over 100 million ratings from over 400,000 users on over 17,000 films. Whoever improved the RMSE of Netflix’s “Cinematch” algorithm by 10% within 5 years received $1,000,000. Here, we revisit this contest by using a subset of this dataset, with a different test set than the original contest.
@@ -47,7 +44,10 @@ To balance bias and variance in my data, I used
 - Filtering out users with few (<20) ratings for time bias calcualations
 
 ## Limitations
-The data used in this project is fairly limited. Ideally, there would be information on genre, language, and other metadata that could be incorporated to make better predictions. Additionally, I was rather limited by computing power with my models taking a total of 1hr 20min to train. This made it not feasible to implement cross validation, though if I could've, I would've.
+The data used in this project is fairly limited. Ideally, there would be information on genre, language, and other metadata that could be incorporated to make better predictions. Additionally, I was rather limited by computing power, with my models taking a total of 1hr 20min to train. This made it not feasible to implement cross validation, though if I could've, I would've. Because of this, I was forced into using small subsets of the data to tune hyperparameters.
+
+## Conclusion
+Our findings show that SVD is the strongest individual model on this data set, followed by K nearest neighbors, and then our baseline movie/user/time bias model. However, these models do not all capture the same signal. By combining different models that capture different signals, we can create a stronger, more robust, and more predictive model, leading to the ensemble method being the most effective.
 
 ## Project Structure
 ### Project contents
@@ -105,3 +105,11 @@ The data used in this project is fairly limited. Ideally, there would be informa
     * Contains the predictions made by each model
 * main.py
   * Main python file
+
+## Notes
+Some of the inspiration for the models used in this project came from various sources about what worked in the original competition. Additionally, AI (ChatGPT 5.3) was used for the following tasks:
+- Debugging code
+- Syntax help with implementing the models
+- Troubleshooting package managment and dependency problems
+- Checking the math/logic of the baseline models
+Additonally, I took inspiration from some of the suggestions the AI made during the debugging process, such as how to optimize code and memory.
