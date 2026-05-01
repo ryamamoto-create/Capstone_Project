@@ -74,3 +74,102 @@ def user_movie_bias_model(train_df, test_df):
     rmse = rmse_function(test_df["rating"], preds)
 
     return preds, rmse
+
+def user_movie_time_bias_model(train_df, test_df):
+    train_df = train_df.copy()
+    test_df = test_df.copy()
+
+    lambda_reg = 10
+    lambda_reg_time = 50  # stronger regularization for time
+
+    # --- global mean ---
+    global_mean = train_df["rating"].mean()
+
+    # --- movie bias ---
+    movie_stats = train_df.groupby("movie_id")["rating"].agg(["sum", "count"])
+    movie_bias = (
+        (movie_stats["sum"] - movie_stats["count"] * global_mean)
+        / (movie_stats["count"] + lambda_reg)
+    )
+
+    # --- user bias ---
+    user_stats = (
+        train_df.assign(
+            adjusted=train_df["rating"]
+            - train_df["movie_id"].map(movie_bias)
+            - global_mean
+        )
+        .groupby("user_id")["adjusted"]
+        .agg(["sum", "count"])
+    )
+    user_bias = user_stats["sum"] / (user_stats["count"] + lambda_reg)
+
+    # --- baseline prediction ---
+    train_df["baseline"] = (
+        global_mean
+        + train_df["movie_id"].map(movie_bias)
+        + train_df["user_id"].map(user_bias)
+    )
+
+    # --- residuals (CRITICAL FIX) ---
+    train_df["residual"] = train_df["rating"] - train_df["baseline"]
+
+    # --- time features ---
+    t0 = train_df["date"].min()
+
+    train_df["t"] = (train_df["date"] - t0).dt.days
+
+    user_mean_time = train_df.groupby("user_id")["t"].mean()
+    train_df["t_centered"] = train_df["t"] - train_df["user_id"].map(user_mean_time)
+
+    # --- fast slope calculation ---
+    train_df["t_residual"] = train_df["t_centered"] * train_df["residual"]
+    train_df["t_sq"] = train_df["t_centered"] ** 2
+
+    user_time_stats = train_df.groupby("user_id").agg({
+        "t_residual": "sum",
+        "t_sq": "sum",
+        "residual": "count"  # for filtering
+    })
+
+    # --- compute slopes ---
+    alpha_u = (
+        user_time_stats["t_residual"]
+        / (user_time_stats["t_sq"] + lambda_reg_time)
+    )
+
+    # --- filter weak users (IMPORTANT) ---
+    min_ratings = 20
+    alpha_u[user_time_stats["residual"] < min_ratings] = 0
+
+    # --- test time features ---
+    t_test = (test_df["date"] - t0).dt.days
+
+    t_centered_test = (
+        t_test - test_df["user_id"].map(user_mean_time)
+    ).fillna(0)
+
+    time_effect = t_centered_test * test_df["user_id"].map(alpha_u).fillna(0)
+
+    # --- OPTIONAL: global time effect (often small but helpful) ---
+    global_time = train_df.groupby("t")["residual"].mean()
+    global_time_effect = t_test.map(global_time).fillna(0)
+
+    # --- base prediction ---
+    movie_b = test_df["movie_id"].map(movie_bias).fillna(0)
+    user_b = test_df["user_id"].map(user_bias).fillna(0)
+
+    pred = (
+        global_mean
+        + movie_b
+        + user_b
+        + time_effect
+        + global_time_effect
+    )
+
+    # --- clip to rating range ---
+    pred = np.clip(pred, 1, 5)
+
+    rmse = rmse_function(test_df["rating"], pred)
+
+    return pred, rmse
