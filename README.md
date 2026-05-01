@@ -135,6 +135,7 @@ Our findings show that SVD is the strongest individual model on this data set, f
 * .gitignore
   * Ignore data and configurations
 * data/
+  * Files to big to upload to GitHub
   * raw/
     * data.txt
       * Contains movie rating information
@@ -169,6 +170,7 @@ Our findings show that SVD is the strongest individual model on this data set, f
   * svd_model.pkl
   * knn_model.pkl
     * Files containing the trained models (since they take a long time to train)
+    * Files too big to upload to GitHub
 * predictions/
   * bias_model_preds.parquet
   * global_mean_preds.parquet
