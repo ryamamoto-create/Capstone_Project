@@ -5,7 +5,7 @@
 4. 
 5. 
 6. 
-7. 
+7. [Results](#results)
 8. 
 9. [Limitations](#limitations)
 10. [Conclusion](#conclusion)
@@ -43,6 +43,17 @@ A problem with recommendation systems is the cold-start problem -- what do you d
 To balance bias and variance in my data, I used
 - Regularization terms that shrink the impact of movies with few ratings
 - Filtering out users with few (<20) ratings for time bias calcualations
+
+## Results
+| Model | RMSE |
+| :---: | :---:|
+|Global Mean|1.2832|
+|Movie Mean|1.1002|
+|Bias Model|0.9688|
+|Time Bias|0.9656|
+|KNN|0.9464|
+|SVD|0.9393|
+|Ensemble|0.9341|
 
 ## Limitations
 The data used in this project is fairly limited. Ideally, there would be information on genre, language, and other metadata that could be incorporated to make better predictions. Additionally, I was rather limited by computing power, with my models taking a total of 1hr 20min to train. This made it not feasible to implement cross validation, though if I could've, I would've. Because of this, I was forced into using small subsets of the data to tune hyperparameters.
