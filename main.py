@@ -112,12 +112,12 @@ def main():
     results += run_baselines(train_df, test_df)
 
     # SVD is slow, toggle when needed
-    RUN_SVD = True
+    RUN_SVD = False
     if RUN_SVD:
         results += run_svd(train_df, test_df)
 
     # KNN is also slow, toggle when needed
-    RUN_KNN = True
+    RUN_KNN = False
     if RUN_KNN:
         results += run_knn(train_df, test_df)
 
