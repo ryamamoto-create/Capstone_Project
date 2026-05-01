@@ -1,3 +1,5 @@
+# Table of Contents
+1. Capstone Project Structure
 ## Capstone Project Structure
 ### Project contents
 * README.md
@@ -41,8 +43,16 @@
 * img/
   * Images
 * models/
-  * Files containing the trained models (since they take a long time to train)
+  * svd_model.pkl
+  * knn_model.pkl
+    * Files containing the trained models (since they take a long time to train)
 * predictions/
-  * Contains the predictions made by each model
+  * bias_model_preds.parquet
+  * global_mean_preds.parquet
+  * movie_mean_preds.parquet
+  * knn_preds.parquet
+  * svd_preds.parquet
+  * time_bias_model_preds.parquet
+    * Contains the predictions made by each model
 * main.py
   * Main python file
