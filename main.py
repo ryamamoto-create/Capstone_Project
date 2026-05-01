@@ -143,7 +143,7 @@ def main():
 
     rmse = rmse_function(df["actual_svd"], df["ensemble"])
     print(f"Ensemble RMSE: {rmse:.4f}")
-
+    
 # Run the main function
 if __name__ == "__main__":
     main()
