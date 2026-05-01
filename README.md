@@ -6,7 +6,7 @@
 5. [Advanced Models](#advanced-models)
 6. [Ensemble](#ensemble)
 7. [Results](#results)
-8. 
+8. [Interpretation](#interpretation)
 9. [Limitations](#limitations)
 10. [Conclusion](#conclusion)
 11. [Project Structure](#capstone-project-structure)
@@ -82,6 +82,29 @@ $$
 Then, since the ensemble prediction is a linear equation, to find the appropriate weights for the ensemble, I used ridge regression with a basic grid search to find the best penalty coefficient. The idea behind this model is that, by combining diverse models that capture different elements of the signal, we can create a more robust and predictive model. 
 
 Indeed, we saw a drop in RMSE with this model, beating every other single predictor model. We found that the optimal combination of weights for SVD, KNN, and the movie/user/time model were $[0.6464 0.3105 0.0835]$. This shows that SVD had the greatest impact, with KNN still having a large impact, and the movie/user/time model having a smaller but noticeable impact.
+
+## Interpretation
+### Individual Models
+This project experimented with a variety of models, from simple baselines to more complex models and finally an ensemble. The results show the strength of individual models and how combining complementary models can achieve results greater than the sum of its parts.
+
+The global mean and movie mean models perform poorly since they don't account for user taste. Including user taste in the model brings the RMSE close to the original Netflix "Cinematch" algorithm's level. This shows that a lot of the variance in the ratings can be explained by individual rating patterns.
+
+We found that the best non-ensemble model was SVD. This makes sense as, by learning latent representations of users and movies, it captures the underlying structure of the data, allowing it to generalize better than any other model. This result is in line with the knowledge that SVD is well suited for this kind of problem.
+
+KNN performed the second best on this data set. This shows the strength of capturing local relationships. This model still managed to outperform the baseline models.
+
+Finally, the movie/user/time bias model provided a slight improvement over the main baseline models. This shows that, while there is some signal in the temporal data, it is not especially strong or predictive.
+
+### Ensemble model
+The ensemble model achieved the best overall performance, reducing RMSE beyond any individual model. By using ridge regression, we learned optimal weights directly from the data and minimized this ensemble's performance.
+
+The learned weights placed the greatest emphasis on the SVD model, then KNN, then the user/movie/time bias model. However, the fact that they all contribute to a meaningful degree shows how they capture a different signal. The idea behind this ensemble is
+
+* SVD captures global latent structure
+* KNN captures local relationships
+* User/movie/time bias models provides a baseline estimate and incorporates temporal information
+
+Ensembling allows us to stack the strenghts of each model while helping to minimize the weaknesses of each individual model by having the others make up for them.
 
 ## Results
 | Model | RMSE |
@@ -162,5 +185,5 @@ Some of the inspiration for the models used in this project came from various so
 - Debugging code
 - Syntax help with implementing the models
 - Troubleshooting package managment and dependency problems
-- Checking the math/logic of the baseline models
+- Checking the math/logic of the baseline models  
 Additonally, I took inspiration from some of the suggestions the AI made during the debugging process, such as how to optimize code and memory.
