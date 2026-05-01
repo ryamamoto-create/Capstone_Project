@@ -1,5 +1,5 @@
 # Table of Contents
-1. Capstone Project Structure
+1. [Capstone Project Structure](#capstone-project-structure)
 ## Capstone Project Structure
 ### Project contents
 * README.md
