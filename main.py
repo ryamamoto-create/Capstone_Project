@@ -4,8 +4,8 @@ import random
 import pandas as pd
 
 from preprocessing import train_test 
-from config import RATING_PARQUET_PATH, SEED, SVD_PREDICTIONS_PATH, KNN_PREDICTIONS_PATH, BIAS_MODEL_PREDICTIONS_PATH
-from baseline import global_mean_model, movie_mean_model, user_movie_bias_model
+from config import RATING_PARQUET_PATH, SEED, SVD_PREDICTIONS_PATH, KNN_PREDICTIONS_PATH, TIME_BIAS_MODEL_PREDICTIONS_PATH
+from baseline import global_mean_model, movie_mean_model, user_movie_bias_model, user_movie_time_bias_model
 from svd import svd_model, save_model
 from knn import knn_model, rmse_function
 from evaluation import format_result
@@ -45,6 +45,16 @@ def run_baselines(train_df, test_df):
     "actual": test_df["rating"],
     "pred": preds
     }).to_parquet("predictions/bias_model_preds.parquet", index=False)
+
+    preds, rmse = user_movie_time_bias_model(train_df, test_df)
+    results.append(format_result("time_bias_model", preds, rmse))
+    # Save predictions for analysis
+    pd.DataFrame({
+    "user_id": test_df["user_id"],
+    "movie_id": test_df["movie_id"],
+    "actual": test_df["rating"],
+    "pred": preds
+    }).to_parquet("predictions/time_bias_model_preds.parquet", index=False)
     
     return results
 
@@ -125,11 +135,11 @@ def main():
     print_results(results)
 
     # 5. Build ensemble, weights found from exploration notebook
-    # Ensemble weights (SVD, KNN, Bias)
-    w_svd, w_knn, w_bias = 0.6, 0.4, 0.0
+    # Ensemble weights (SVD, KNN, Time Bias)
+    w_svd, w_knn, w_bias = 0.6, 0.3, 0.1
     svd = pd.read_parquet(SVD_PREDICTIONS_PATH)
     knn = pd.read_parquet(KNN_PREDICTIONS_PATH)
-    bias = pd.read_parquet(BIAS_MODEL_PREDICTIONS_PATH)
+    bias = pd.read_parquet(TIME_BIAS_MODEL_PREDICTIONS_PATH)
 
     df = svd.merge(knn, on=["user_id", "movie_id"], suffixes=("_svd", "_knn"))
     df = df.merge(bias, on=["user_id", "movie_id"])
@@ -143,7 +153,7 @@ def main():
 
     rmse = rmse_function(df["actual_svd"], df["ensemble"])
     print(f"Ensemble RMSE: {rmse:.4f}")
-    
+
 # Run the main function
 if __name__ == "__main__":
     main()
