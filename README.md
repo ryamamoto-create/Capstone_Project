@@ -2,7 +2,7 @@
 1. [Introduction](#introduction)
 2. [Data Description](#data-description)
 3. [Key Challenges](#key-challenges)
-4. 
+4. [Baseline Models](#baseline models)
 5. 
 6. 
 7. [Results](#results)
@@ -20,6 +20,8 @@ With the rise of social media, recommendation algorithms are more important than
 The goal of this project is to improve this RMSE by as much as possible using an ensemble of an SVD, K nearest neighbors, and baseline algorithm. This project was assigned during finals season to simulate working conditions; to see what I can produce when multiple projects are demanding my attention. 
 
 Though sources online differ, the RMSE (root mean square error) of the base "Cinematch" algorithm falls somewhere in the range of 0.9474 to 0.9525. With my limited resources, both time and compute, surpassing this baseline I would consider a success (spoiler - RMSE achieved: 0.93409). 
+
+Though much of what I've done in this project is not required, I wanted to use this opportunity to demonstrate my computer science skills I've been teaching myself, as well as my math skills to some degree as I complete my math major after the end of this semester.
 
 ## Data Description  
 I was given two files: 'data.txt' and 'movieTitles.csv'. The file 'data.txt' is a plaintext file containing movie ids and rating information (the user id, a rating 1-5, and date rated for each review). It is over 27 million lines long, containing ratings on 5k movies from ~400k users, and the data is rather sparse as most users haven't rated most movies. Due to the size and formatting of the data, I created a special function in 'src/parsing.py' called "load_ratings()" that reads the file line by line and converts the results into a pandas dataframe. I then use another function to save the dataframe as a parquet in 'data/processed/ratings.parquet'. I did this to improve efficiency when repeatedly loading the data and to reduce the amount of storage the data took up.
@@ -43,6 +45,28 @@ A problem with recommendation systems is the cold-start problem -- what do you d
 To balance bias and variance in my data, I used
 - Regularization terms that shrink the impact of movies with few ratings
 - Filtering out users with few (<20) ratings for time bias calcualations
+
+## Baseline Models
+### Global Mean  
+The most simple baseline model is the global mean model. This model takes the average rating for all movies in the data and predicts this value no matter what. It is the best estimator when there is no other information available, but does not adapt to the movie or user.
+### Movie Mean
+This baseline model finds the average rating for each individual movie and, regardless of the user, predicts this value. This provides more flexibility than the global mean model as it adapts to differences between movies. However, it is does not account for user taste.
+### Movie-User Bias Model
+This model is modeled after the idea that
+\[
+\text{Actual Rating} \approx \text{Global Mean} + \text{Movie Bias} + \text{User Bias}
+\]
+where movie bias is the term accounting for how much higher or lower rated the movie is than average and user bias accounts for whether the user has a tendency to give high ratings or low ratings. Additionally, there is a regularization constant that shrinks the movie and user biases toward 0, preventing movies and users with few ratings and extreme values from impacting the outcome too much.
+### Movie-User-Time Model
+This model extends the movie-user bias model by accounting for how user preferences change over time. The idea is users tastes and generosity with ratings may change as time passes. This model can be written as
+\[
+\text{Actual Rating} \approx \text{Global Mean} + \text{Movie Bias} + \text{User Bias} + \text{Time Effect}
+\]
+The time effect, modeled as
+\[
+\text{Time Effect} = \alpha_{u} \cdot (t-\bar{t}_u)
+\]
+where the $\alpha_u$ coefficient represents how a user's behavior changes over time and $\bar{t}_u$ is the average time of rating for that user. We subtract $\bar{t}_u$ from the actual time value to center it which allows us to properly capture whether the user became more or less generous over time. Otherwise, if a user had rated mostly when time was larger, then this trend would've likely been attributed to user bias instead. The regularization constant for movies and users is still there, along with a larger regularization constant for time, since time is a weaker signal and contains more noise. Additionally, the time effect is modeled to predict the residuals to help capture the variance not explained by the previous model.
 
 ## Results
 | Model | RMSE |
