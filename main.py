@@ -4,10 +4,10 @@ import random
 import pandas as pd
 
 from preprocessing import train_test 
-from config import RATING_PARQUET_PATH, SEED
+from config import RATING_PARQUET_PATH, SEED, SVD_PREDICTIONS_PATH, KNN_PREDICTIONS_PATH, BIAS_MODEL_PREDICTIONS_PATH
 from baseline import global_mean_model, movie_mean_model, user_movie_bias_model
 from svd import svd_model, save_model
-from knn import knn_model
+from knn import knn_model, rmse_function
 from evaluation import format_result
 
 # Run all the baseline models and return their results
@@ -124,5 +124,26 @@ def main():
     # 4. Print comparison
     print_results(results)
 
+    # 5. Build ensemble, weights found from exploration notebook
+    # Ensemble weights (SVD, KNN, Bias)
+    w_svd, w_knn, w_bias = 0.6, 0.4, 0.0
+    svd = pd.read_parquet(SVD_PREDICTIONS_PATH)
+    knn = pd.read_parquet(KNN_PREDICTIONS_PATH)
+    bias = pd.read_parquet(BIAS_MODEL_PREDICTIONS_PATH)
+
+    df = svd.merge(knn, on=["user_id", "movie_id"], suffixes=("_svd", "_knn"))
+    df = df.merge(bias, on=["user_id", "movie_id"])
+    df = df.rename(columns={"pred": "pred_bias"})
+
+    df["ensemble"] = (
+    w_svd * df["pred_svd"]
+    + w_knn * df["pred_knn"]
+    + w_bias * df["pred_bias"]
+    )
+
+    rmse = rmse_function(df["actual_svd"], df["ensemble"])
+    print(f"Ensemble RMSE: {rmse:.4f}")
+
+# Run the main function
 if __name__ == "__main__":
     main()
