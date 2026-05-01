@@ -74,7 +74,14 @@ I trained an SVD model with 50 factors and a reg_all value of 0.05 over 20 epoch
 ### KNN
 I trained a K nearest neighbors model where $k=40$ using surprise. I chose this model as I believed it would complement the SVD model in the ensemble later. SVD captures the overall latent structure while the KNN model caputures the local trends. Similar movies will tend to receive similar ratings, which is what this model is designed to capture. 
 
-# Ensemble
+## Ensemble
+After being inspired by similar projects, I decided to create an ensemble of an SVD model, a KNN model, and the movie-user-time bias model. I chose these models because I theorized that SVD would capture the overall structure of the data, KNN would identify local patterns, and the movie-user-time bias model would incorporate temporal information. This gives use the model
+$$
+\text{Ensemble Prediction} = w_1 \cdot \text{SVD Prediction} + w_2 \cdot \text{KNN Prediction} + w_3 \cdot\text{Movie/User/Time Prediction}
+$$
+Then, since the ensemble prediction is a linear equation, to find the appropriate weights for the ensemble, I used ridge regression with a basic grid search to find the best penalty coefficient. The idea behind this model is that, by combining diverse models that capture different elements of the signal, we can create a more robust and predictive model. 
+
+Indeed, we saw a drop in RMSE with this model, beating every other single predictor model. We found that the optimal combination of weights for SVD, KNN, and the movie/user/time model were $[0.6464 0.3105 0.0835]$. This shows that SVD had the greatest impact, with KNN still having a large impact, and the movie/user/time model having a smaller but noticeable impact.
 
 ## Results
 | Model | RMSE |
