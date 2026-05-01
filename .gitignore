@@ -2,6 +2,9 @@
 data/raw/*
 data/processed/*
 
+# Ignore models
+models/*
+
 # Ignore configurations
 config.py
 

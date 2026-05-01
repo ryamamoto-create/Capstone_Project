@@ -168,8 +168,6 @@ def main():
         preds = ridge.predict(X)
         rmse = rmse_function(y, preds)
 
-        print(f"alpha={alpha:<6} RMSE={rmse:.6f}")
-
         if rmse < best_rmse:
             best_rmse = rmse
             best_alpha = alpha
