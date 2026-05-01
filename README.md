@@ -1,8 +1,18 @@
 # Table of Contents
 1. [Introduction](#introduction)
-2. [Data Description] (#data-description)
-3. 
-4. [Capstone Project Structure](#capstone-project-structure)
+2. [Data Description](#data-description)
+3. [Key Challenges](#key-challenges)
+4. 
+5. 
+6. 
+7. 
+8. 
+9. [Limitations](#limitations)
+10. 
+11. 
+12. 
+13. 
+14. [Project Structure](#capstone-project-structure)
 
 ## Introduction  
 In 2006, Netflix released over 100 million ratings from over 400,000 users on over 17,000 films. Whoever improved the RMSE of Netflix’s “Cinematch” algorithm by 10% within 5 years received $1,000,000. Here, we revisit this contest by using a subset of this dataset, with a different test set than the original contest.
@@ -20,7 +30,26 @@ The file 'movieTitles.csv' contains a table of each movie id, its release year, 
 
 I then created a train-test split by using *all* ratings for a given movie in the training set, except for *one* randomly picked rating. That one rating (per movie) constitutes the test set. This was done with the "train_test" function in 'src/preprocessing.py'.
 
-## Capstone Project Structure
+## Key Challenges  
+### Sparsity  
+Since most users haven't rated most movies, the data is very sparse, i.e. many user-movie combinations do not exist in the data. With sparse data, certain models aren't as well suited and overfitting becomes even more of a concern. My approach to this problem involved
+- Using aggregation for the baseline models which reduces variance via pooling
+- Residual modeling, in the user/movie/time bias model, capturing systematic over/underestimation trends common with sparse data
+- SVD, designed to take large, sparse matrices and decompose them into smaller, denser matrices capturing important latent features
+### Cold-Start  
+A problem with recommendation systems is the cold-start problem -- what do you do when there is little to no information on a user/movie? I handled this in my code by
+- Using the global mean for movies with no reviews (if they exist)
+- Using 0 user bias for new users
+- Using the mean movie rating for pairs of new users and new movies
+### Bias/Variance
+To balance bias and variance in my data, I used
+- Regularization terms that shrink the impact of movies with few ratings
+- Filtering out users with few (<20) ratings for time bias calcualations
+
+## Limitations
+The data used in this project is fairly limited. Ideally, there would be information on genre, language, and other metadata that could be incorporated to make better predictions. Additionally, I was rather limited by computing power with my models taking a total of 1hr 20min to train. This made it not feasible to implement cross validation, though if I could've, I would've.
+
+## Project Structure
 ### Project contents
 * README.md
 * pyproject.toml
