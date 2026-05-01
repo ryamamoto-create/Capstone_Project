@@ -9,6 +9,8 @@ from baseline import global_mean_model, movie_mean_model, user_movie_bias_model,
 from svd import svd_model, save_model
 from knn import knn_model, rmse_function
 from evaluation import format_result
+from sklearn.linear_model import Ridge
+from sklearn.metrics import mean_squared_error
 
 # Run all the baseline models and return their results
 def run_baselines(train_df, test_df):
@@ -133,26 +135,57 @@ def main():
 
     # 4. Print comparison
     print_results(results)
+    print()
 
-    # 5. Build ensemble, weights found from exploration notebook
-    # Ensemble weights (SVD, KNN, Time Bias)
-    w_svd, w_knn, w_bias = 0.6, 0.3, 0.1
+    # 5. Build ensemble using ridge regression instead of manual weights
+    # Note that the features are on the same scale so we can use ridge regression without standardization
     svd = pd.read_parquet(SVD_PREDICTIONS_PATH)
     knn = pd.read_parquet(KNN_PREDICTIONS_PATH)
     bias = pd.read_parquet(TIME_BIAS_MODEL_PREDICTIONS_PATH)
 
+    # Merge all predictions
     df = svd.merge(knn, on=["user_id", "movie_id"], suffixes=("_svd", "_knn"))
     df = df.merge(bias, on=["user_id", "movie_id"])
+
     df = df.rename(columns={"pred": "pred_bias"})
 
-    df["ensemble"] = (
-    w_svd * df["pred_svd"]
-    + w_knn * df["pred_knn"]
-    + w_bias * df["pred_bias"]
-    )
+    # Feature matrix (model outputs)
+    X = df[["pred_svd", "pred_knn", "pred_bias"]].values
 
-    rmse = rmse_function(df["actual_svd"], df["ensemble"])
-    print(f"Ensemble RMSE: {rmse:.4f}")
+    # Target
+    y = df["actual"].values  # assumes all files store same ground truth column
+
+    alphas = [1e-4, 1e-3, 1e-2, 1e-1, 1, 5, 10, 50, 100]
+
+    best_rmse = float("inf")
+    best_alpha = None
+    best_model = None
+
+    for alpha in alphas:
+        ridge = Ridge(alpha=alpha, fit_intercept=True)
+        ridge.fit(X, y)
+
+        preds = ridge.predict(X)
+        rmse = rmse_function(y, preds)
+
+        print(f"alpha={alpha:<6} RMSE={rmse:.6f}")
+
+        if rmse < best_rmse:
+            best_rmse = rmse
+            best_alpha = alpha
+            best_model = ridge
+
+    # Final model
+    ridge = best_model
+    df["ensemble"] = ridge.predict(X)
+
+    rmse = best_rmse
+
+    print("\n=== BEST RIDGE ENSEMBLE ===")
+    print(f"Best alpha: {best_alpha}")
+    print(f"RMSE: {rmse:.6f}")
+    print(f"Weights: {ridge.coef_}")
+    print(f"Intercept: {ridge.intercept_}")
 
 # Run the main function
 if __name__ == "__main__":
