@@ -1,6 +1,25 @@
 # Table of Contents
-1. [Capstone Project Structure](#capstone-project-structure)
-2. [Pipeline](#pipeline)
+1. [Introduction](#introduction)
+2. [Data Description] (#data-description)
+3. 
+4. [Capstone Project Structure](#capstone-project-structure)
+
+## Introduction  
+In 2006, Netflix released over 100 million ratings from over 400,000 users on over 17,000 films. Whoever improved the RMSE of Netflix’s “Cinematch” algorithm by 10% within 5 years received $1,000,000. Here, we revisit this contest by using a subset of this dataset, with a different test set than the original contest.
+
+With the rise of social media, recommendation algorithms are more important than ever. Even children and non-technical people throw around the term "The Algorithm," showing its prescence in the current zeitgeist. Despite this challenge being annouced in 2006, I chose this project as I believed the skills I would learn from it would be especially relevant in the current landscape.
+
+The goal of this project is to improve this RMSE by as much as possible using an ensemble of an SVD, K nearest neighbors, and baseline algorithm. This project was assigned during finals season to simulate working conditions; to see what I can produce when multiple projects are demanding my attention. 
+
+Though sources online differ, the RMSE (root mean square error) of the base "Cinematch" algorithm falls somewhere in the range of 0.9474 to 0.9525. With my limited resources, both time and compute, surpassing this baseline I would consider a success (spoiler - RMSE achieved: 0.93409). 
+
+## Data Description  
+I was given two files: 'data.txt' and 'movieTitles.csv'. The file 'data.txt' is a plaintext file containing movie ids and rating information (the user id, a rating 1-5, and date rated for each review). It is over 27 million lines long, containing ratings on 5k movies from ~400k users, and the data is rather sparse as most users haven't rated most movies. Due to the size and formatting of the data, I created a special function in 'src/parsing.py' called "load_ratings()" that reads the file line by line and converts the results into a pandas dataframe. I then use another function to save the dataframe as a parquet in 'data/processed/ratings.parquet'. I did this to improve efficiency when repeatedly loading the data and to reduce the amount of storage the data took up.
+
+The file 'movieTitles.csv' contains a table of each movie id, its release year, its corresponding movie title. It is a csv file that is 5000 lines long. Because of the commas in the movie titles, I wrote a function that manually parses each column and returns the data as a dataframe. 
+
+I then created a train-test split by using *all* ratings for a given movie in the training set, except for *one* randomly picked rating. That one rating (per movie) constitutes the test set. This was done with the "train_test" function in 'src/preprocessing.py'.
+
 ## Capstone Project Structure
 ### Project contents
 * README.md
@@ -57,7 +76,3 @@
     * Contains the predictions made by each model
 * main.py
   * Main python file
-
-## Pipeline  
-This project consisted of the following layers
-1. Parsing layer  
