@@ -10,6 +10,7 @@
 9. [Limitations](#limitations)
 10. [Conclusion](#conclusion)
 11. [Project Structure](#capstone-project-structure)
+12. [Addional Notes](#additional_notes)
 
 ## Introduction  
 In 2006, Netflix released over 100 million ratings from over 400,000 users on over 17,000 films. Whoever improved the RMSE of Netflix’s “Cinematch” algorithm by 10% within 5 years received $1,000,000. Here, we revisit this contest by using a subset of this dataset, with a different test set than the original contest.
@@ -106,7 +107,7 @@ Our findings show that SVD is the strongest individual model on this data set, f
 * main.py
   * Main python file
 
-## Notes
+## Additional Notes
 Some of the inspiration for the models used in this project came from various sources about what worked in the original competition. Additionally, AI (ChatGPT 5.3) was used for the following tasks:
 - Debugging code
 - Syntax help with implementing the models
