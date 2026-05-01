@@ -1,5 +1,6 @@
 # Table of Contents
 1. [Capstone Project Structure](#capstone-project-structure)
+2. [Pipeline](#pipeline)
 ## Capstone Project Structure
 ### Project contents
 * README.md
@@ -56,3 +57,7 @@
     * Contains the predictions made by each model
 * main.py
   * Main python file
+
+## Pipeline  
+This project consisted of the following layers
+1. Parsing layer  
