@@ -1,16 +1,30 @@
 # Table of Contents
-1. [Introduction](#introduction)
-2. [Data Description](#data-description)
-3. [Key Challenges](#key-challenges)
-4. [Baseline Models](#baseline_models)
-5. [Advanced Models](#advanced-models)
-6. [Ensemble](#ensemble)
-7. [Results](#results)
-8. [Interpretation](#interpretation)
-9. [Limitations](#limitations)
-10. [Conclusion](#conclusion)
-11. [Project Structure](#capstone-project-structure)
-12. [Addional Notes](#additional_notes)
+- [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Data Description](#data-description)
+  - [Key Challenges](#key-challenges)
+    - [Sparsity](#sparsity)
+    - [Cold-Start](#cold-start)
+    - [Bias/Variance](#biasvariance)
+  - [Baseline Models](#baseline-models)
+    - [Global Mean](#global-mean)
+    - [Movie Mean](#movie-mean)
+    - [Movie-User Bias Model](#movie-user-bias-model)
+  - [Advanced Models](#advanced-models)
+    - [Movie-User-Time Model](#movie-user-time-model)
+    - [SVD](#svd)
+    - [KNN](#knn)
+  - [Ensemble](#ensemble)
+  - [Interpretation](#interpretation)
+    - [Individual Models](#individual-models)
+    - [Ensemble model](#ensemble-model)
+  - [Results](#results)
+  - [Limitations](#limitations)
+  - [Conclusion](#conclusion)
+  - [Extra Credit](#extra-credit)
+  - [Project Structure](#project-structure)
+    - [Project contents](#project-contents)
+  - [Additional Notes](#additional-notes)
 
 ## Introduction  
 In 2006, Netflix released over 100 million ratings from over 400,000 users on over 17,000 films. Whoever improved the RMSE of Netflix’s “Cinematch” algorithm by 10\% within 5 years received \$1,000,000. Here, we revisit this contest by using a subset of this dataset, with a different test set than the original contest.
@@ -130,6 +144,11 @@ The data used in this project is fairly limited. Ideally, there would be informa
 
 ## Conclusion
 Our findings show that SVD is the strongest individual model on this data set, followed by K nearest neighbors, and then our baseline movie/user/time bias model. However, these models do not all capture the same signal. By combining different models that capture different signals, we can create a stronger, more robust, and more predictive model, leading to the ensemble method being the most effective.
+
+## Extra Credit
+I used the latent vectors from my SVD and projected them into 2D using UMAP. We can see that movies from the same series are grouped together such as Back to the Future parts II and III. Horror movies also are grouped together, with Scream, Texas Chainsaw Massacre, and Tremors all nearby each other. We can also see a very "Dad" kind of movie taste, with War Games, The Godfather, Part II, and The Wire all clustered together. Even though the model was trained on ratings, we can see how it learned to capture patterns in user taste.
+
+![2D UMAP Projection of Movie Embeddings](img/umap_movie_embeddings.png)
 
 ## Project Structure
 ### Project contents
