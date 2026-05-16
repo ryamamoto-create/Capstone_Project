@@ -13,7 +13,7 @@
 12. [Addional Notes](#additional_notes)
 
 ## Introduction  
-In 2006, Netflix released over 100 million ratings from over 400,000 users on over 17,000 films. Whoever improved the RMSE of Netflix’s “Cinematch” algorithm by 10% within 5 years received $1,000,000. Here, we revisit this contest by using a subset of this dataset, with a different test set than the original contest.
+In 2006, Netflix released over 100 million ratings from over 400,000 users on over 17,000 films. Whoever improved the RMSE of Netflix’s “Cinematch” algorithm by 10\% within 5 years received \$1,000,000. Here, we revisit this contest by using a subset of this dataset, with a different test set than the original contest.
 
 With the rise of social media, recommendation algorithms are more important than ever. Even children and non-technical people throw around the term "The Algorithm," showing its prescence in the current zeitgeist. Despite this challenge being annouced in 2006, I chose this project as I believed the skills I would learn from it would be especially relevant in the current landscape.
 
