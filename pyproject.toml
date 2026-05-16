@@ -13,5 +13,7 @@ dependencies = [
     "pyarrow",
     "fastparquet",
     "scikit-learn>=1.2",
-    "scikit-surprise==1.1.4"  # explicitly use correct package name + version
+    "scikit-surprise==1.1.4",  # explicitly use correct package name + version
+    "umap-learn",
+    "matplotlib"
 ]
