@@ -191,8 +191,12 @@ I used the latent vectors from my SVD and projected them into 2D using UMAP. We 
     * Train K nearest neighbors model
   * evaluation.py
     * Evaluate the models
+  * extract_model.py
+    * Extracts the latent embeddings from the SVD model
+  * visualize_embeddings.py
+    * Performs UMAP and creates the visualization for extra credit
 * img/
-  * Images
+  * umap_movie_embeddings.png
 * models/
   * svd_model.pkl
   * knn_model.pkl
