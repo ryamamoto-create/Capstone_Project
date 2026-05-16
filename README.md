@@ -53,21 +53,27 @@ The most simple baseline model is the global mean model. This model takes the av
 This baseline model finds the average rating for each individual movie and, regardless of the user, predicts this value. This provides more flexibility than the global mean model as it adapts to differences between movies. However, it is does not account for user taste.
 ### Movie-User Bias Model
 This model is modeled after the idea that
+
 $$
 \text{Actual Rating} \approx \text{Global Mean} + \text{Movie Bias} + \text{User Bias}
 $$
+
 where movie bias is the term accounting for how much higher or lower rated the movie is than average and user bias accounts for whether the user has a tendency to give high ratings or low ratings. Additionally, there is a regularization constant that shrinks the movie and user biases toward 0, preventing movies and users with few ratings and extreme values from impacting the outcome too much.
 
 ## Advanced Models
 ### Movie-User-Time Model
 This model extends the movie-user bias model by accounting for how user preferences change over time. The idea is users tastes and generosity with ratings may change as time passes. This model can be written as
+
 $$
 \text{Actual Rating} \approx \text{Global Mean} + \text{Movie Bias} + \text{User Bias} + \text{Time Effect}
 $$
+
 The time effect, modeled as
+
 $$
 \text{Time Effect} = \alpha_{u} \cdot (t-\bar{t}_u)
 $$
+
 where the $\alpha_u$ coefficient represents how a user's behavior changes over time and $\bar{t}_u$ is the average time of rating for that user. We subtract $\bar{t}_u$ from the actual time value to center it which allows us to properly capture whether the user became more or less generous over time. Otherwise, if a user had rated mostly when time was larger, then this trend would've likely been attributed to user bias instead. The regularization constant for movies and users is still there, along with a larger regularization constant for time, since time is a weaker signal and contains more noise. Additionally, the time effect is modeled to predict the residuals to help capture the variance not explained by the previous model.
 ### SVD
 I trained an SVD model with 50 factors and a reg_all value of 0.05 over 20 epochs using the surprise module. I chose to use an SVD model as it captures the interaction between movies and user taste. SVD models the user–item interaction matrix as the product of lower dimensional user and movie embeddings. Each rating is then approximated by the dot product of these latent factors. This allows SVD to learn underlying patterns in the data and then generalize better. In this project, the SVD model was the best single predictor of ratings.
@@ -76,9 +82,11 @@ I trained a K nearest neighbors model where $k=40$ using surprise. I chose this 
 
 ## Ensemble
 After being inspired by similar projects, I decided to create an ensemble of an SVD model, a KNN model, and the movie-user-time bias model. I chose these models because I theorized that SVD would capture the overall structure of the data, KNN would identify local patterns, and the movie-user-time bias model would incorporate temporal information. This gives use the model
+
 $$
 \text{Ensemble Prediction} = w_1 \cdot \text{SVD Prediction} + w_2 \cdot \text{KNN Prediction} + w_3 \cdot\text{Movie/User/Time Prediction}
 $$
+
 Then, since the ensemble prediction is a linear equation, to find the appropriate weights for the ensemble, I used ridge regression with a basic grid search to find the best penalty coefficient. The idea behind this model is that, by combining diverse models that capture different elements of the signal, we can create a more robust and predictive model. 
 
 Indeed, we saw a drop in RMSE with this model, beating every other single predictor model. We found that the optimal combination of weights for SVD, KNN, and the movie/user/time model were $[0.6464 0.3105 0.0835]$. This shows that SVD had the greatest impact, with KNN still having a large impact, and the movie/user/time model having a smaller but noticeable impact.
